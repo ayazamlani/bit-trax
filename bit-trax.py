@@ -5,10 +5,17 @@ import json
 import openpyxl
 from openpyxl import Workbook
 from bittrex import Bittrex
+from openpyxl.chart import (
+    PieChart,
+    Reference
+)
+from openpyxl.chart.label import DataLabelList
+from openpyxl.styles import Font
 
 # Change this to your API data. For your security, only enable API key to read data. Not to buy and sell orders.
 API_KEY = 'INSERT_API_KEY_HERE'
 API_SECRET = 'INSERT_API_SECRET_HERE'
+
 
 # Static global data Do Not Change
 API = Bittrex(API_KEY, API_SECRET)
@@ -72,23 +79,55 @@ def writePricesToExcel():
         sheet_name = str(datetime.datetime.now())[:10] + ' %d' % count
     wb.create_sheet(title=sheet_name)
     ws = wb.get_sheet_by_name(sheet_name)
-    ws['A1'] = 'Date'
-    ws['B1'] = 'Symbol'
-    ws['C1'] = 'Price (USD)'
-    ws['D1'] = '# of Shares Owned'
-    ws['E1'] = 'Value of Shares'
+    ws['K1'] = 'Date'
+    ws['L1'] = 'Symbol'
+    ws['M1'] = 'Price (USD)'
+    ws['N1'] = '# of Shares Owned'
+    ws['O1'] = 'Value of Shares'
     for i, item in enumerate(currency_data):
-        ws.cell(row=i + 2, column=1).value = datetime.datetime.now()
-        ws.cell(row=i + 2, column=2).value = item['Symbol']
-        ws.cell(row=i + 2, column=3).value = item['Price']
-        ws.cell(row=i + 2, column=4).value = item['Balance']
-        ws.cell(row=i + 2, column=5).value = item['Total']
-    ws['F1'] = 'Portfolio Total Value'
-    ws['F2'] = current_balance
+        ws.cell(row=i + 2, column=11).value = datetime.datetime.now()
+        ws.cell(row=i + 2, column=12).value = item['Symbol']
+        ws.cell(row=i + 2, column=13).value = item['Price']
+        ws.cell(row=i + 2, column=13).number_format = '$0.0000'
+        ws.cell(row=i + 2, column=14).value = item['Balance']
+        ws.cell(row=i + 2, column=15).value = item['Total']
+        ws.cell(row=i + 2, column=15).number_format = '$00.00'
+    ws['P1'] = 'Portfolio Total Value'
+    ws['P1'].font = Font(bold=True)
+    ws['P2'] = current_balance
+    ws['P2'].font = Font(bold=True)
+    ws['P2'].number_format = '$0,000.00'
     if 'Sheet' in wb.sheetnames:
         default_sheet = wb.get_sheet_by_name('Sheet')
         wb.remove_sheet(default_sheet)
+    # analyzeData(wb)
     wb.save('Bittrex_Data.xlsx')
+    for sheet in wb.get_sheet_names():
+        ws = wb.get_sheet_by_name(sheet)
+        create_Pie_Chart(ws)
+    wb.save('Bittrex_Data.xlsx')
+
+
+def create_Pie_Chart(ws):
+    data = []
+
+    for r in range(1, ws.max_row):
+        data.append([[ws.cell(row=r, column=12).value], [ws.cell(row=r, column=15).value]])
+
+    pie = PieChart()
+    labels = Reference(ws, min_col=12, min_row=2, max_row=ws.max_row)
+    data = Reference(ws, min_col=15, min_row=2, max_row=ws.max_row)
+    pie.add_data(data, titles_from_data=True)
+    pie.set_categories(labels)
+    pie.title = "Portfolio"
+    pie.dataLabels = DataLabelList()
+    pie.dataLabels.showPercent = True
+    pie.dataLabels.showVal = True
+    pie.dataLabels.showCatName = True
+    pie.dataLabels.separator = "\n"
+    pie.width = 20
+    pie.height = 20
+    ws.add_chart(pie, "A1")
 
 
 main()
