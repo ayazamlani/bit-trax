@@ -1,13 +1,12 @@
 # bit-trax
 
-This is a simple python program that will gather the pricing of
-any crypto currency that you have at least 1 whole coin/share of on Bittrex
+A simple python program that will gather the pricing of
+any crypto currency that you have at least .01 whole coin/share of on Bittrex
 (using @ericsomdahl's [python-bittrex](https://github.com/ericsomdahl/python-bittrex)).
 
-Next, This program will then collect the USD value from Coin Market Cap API of the currencies currently owned on bittrex.
+This program collects the USD value from Coin Market Cap API of the currencies pulled from bittrex.
 
 Finally it will save the data to an excel file called **'Bittrex_Data.xlsx'**.
-
 
 ###Instructions###
 1. Open the bit-trax.py file
@@ -16,7 +15,7 @@ Finally it will save the data to an excel file called **'Bittrex_Data.xlsx'**.
 
 3. Run bit-trax.py
 
-4. Open 'Bittrex_Data.xlsx' to see the data
+4. Open **'Bittrex_Data.xlsx'** to see the data
 
 
 *You can run this program multiple times and it will create a new sheet every time.*

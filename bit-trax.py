@@ -37,7 +37,7 @@ def retrieveBittrexData():
     # function to collect Symbols and number of shares owned on bittrex
     data = API.get_balances()
     for item in data['result']:
-        if item['Balance'] >= 1:
+        if item['Balance'] >= .01:
             currency = {}
             currency['Symbol'] = item['Currency']
             currency['Balance'] = item['Balance']
@@ -109,14 +109,9 @@ def writePricesToExcel():
 
 
 def create_Pie_Chart(ws):
-    data = []
-
-    for r in range(1, ws.max_row):
-        data.append([[ws.cell(row=r, column=12).value], [ws.cell(row=r, column=15).value]])
-
     pie = PieChart()
     labels = Reference(ws, min_col=12, min_row=2, max_row=ws.max_row)
-    data = Reference(ws, min_col=15, min_row=2, max_row=ws.max_row)
+    data = Reference(ws, min_col=15, min_row=1, max_row=ws.max_row)
     pie.add_data(data, titles_from_data=True)
     pie.set_categories(labels)
     pie.title = "Portfolio"
